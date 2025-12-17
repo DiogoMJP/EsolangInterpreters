@@ -85,6 +85,15 @@ int main() {
 	state_machine *sm_loader = create_state_machine_loader();
 
 	#ifdef DEBUG
+		printf("State machine:\n");
+		char *sm_str = state_machine_to_string(sm_loader);
+		if (sm_str != NULL) {
+			printf("%s", sm_str);
+			free(sm_str);
+		}
+	#endif
+
+	#ifdef DEBUG
 		printf("Testing state machine loader transitions...\n");
 	#endif
 	printf("Current state: %d\n", sm_loader->curr_state);

@@ -67,6 +67,7 @@ transition* create_transition(char *conditions, int n_cond, int dest_state) {
     for (int i = 0; i < n_cond; i++) {
         t->conditions[i] = conditions[i];
     }
+    t->n_cond = n_cond;
     t->dest_state = dest_state;
 
     return t;
@@ -85,12 +86,14 @@ int state_transition(state_machine *sm, char input_char) {
     state *curr_state = sm->states[sm->curr_state];
     for (int i = 0; i < curr_state->n_transitions; i++) {
         transition *t = curr_state->transitions[i];
-        if (strchr(t->conditions, input_char) != NULL) {
-            sm->curr_state = t->dest_state;
-            #ifdef DEBUG
-                printf("Transitioning to state %d on input '%c'.\n", sm->curr_state, input_char);
-            #endif
-            return sm->curr_state;
+        for (int c = 0; c < t->n_cond; c++) {
+            if (t->conditions[c] == input_char) {
+                sm->curr_state = t->dest_state;
+                #ifdef DEBUG
+                    printf("Transitioning to state %d on input '%c'.\n", sm->curr_state, input_char);
+                #endif
+                return sm->curr_state;
+            }
         }
     }
 
@@ -99,4 +102,89 @@ int state_transition(state_machine *sm, char input_char) {
     #endif
     sm->curr_state = -1; // Invalid state
     return -1; // No valid transition found
+}
+
+int get_state_machine_string_length(state_machine *sm) {
+    if (sm == NULL) {
+        fprintf(stderr, "State machine is NULL.\n");
+        return -1;
+    }
+    if (sm->states == NULL) {
+        fprintf(stderr, "State machine states are NULL.\n");
+        return -1;
+    }
+
+    /* Begin counting by taking the string terminator into account */
+    int len = 1;
+    for (int i = 0; i < sm->n_states; i++) {
+        state *s = sm->states[i];
+        if (s == NULL) {
+            fprintf(stderr, "State %d is NULL.\n", i);
+            return -1;
+        }
+        if (s->transitions == NULL) {
+            fprintf(stderr, "State %d transitions are NULL.\n", i);
+            return -1;
+        }
+        /* Begin counting for each line/transition */
+        for (int j = 0; j < s->n_transitions; j++) {
+            transition *t = s->transitions[j];
+            if (t == NULL) {
+                fprintf(stderr, "State %d transition %d is NULL.\n", i, j);
+                return -1;
+            }
+            /* Count the digits of the current state ID */
+            int id = i;
+            if (id == 0) {
+                len++;
+            } else {
+                while (id > 0) {
+                    len++;
+                    id /= 10;
+                };
+            }
+            /* Count the '-' characters */
+            len += 2;
+            /* Count the condition characters and commas */
+            len += 2 * t->n_cond - 1;
+            /* Count the digits of the destination state ID */
+            id = t->dest_state;
+            if (id == 0) {
+                len++;
+            } else {
+                while (id > 0) {
+                    len++;
+                    id /= 10;
+                };
+            }
+            /* Count the newline character */
+            len++;
+        }
+    }
+
+    return len;
+}
+
+char* state_machine_to_string(state_machine *sm) {
+    int len = get_state_machine_string_length(sm);
+    if (len == -1) {
+        return NULL;
+    }
+    char *str = (char*) malloc(len * sizeof(char));
+    str[0] = '\0';
+    
+    for (int i = 0; i < sm->n_states; i++) {
+        state *s = sm->states[i];
+        /* Begin adding each line/transition to the string */
+        for (int j = 0; j < s->n_transitions; j++) {
+            transition *t = s->transitions[j];
+            sprintf(str + strlen(str), "%d-", i);
+            for (int c = 0; c < t->n_cond; c++) {
+                sprintf(str + strlen(str), "%c,", t->conditions[c]);
+            }
+            sprintf(str + strlen(str) - 1, "-%d\n", t->dest_state);
+        }
+    }
+
+    return str;
 }

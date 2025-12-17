@@ -10,6 +10,7 @@
 */
 typedef struct transition {
     char *conditions;
+    int n_cond;
     int dest_state;
 } transition;
 
@@ -69,5 +70,12 @@ transition* create_transition(char *conditions, int n_cond, int dest_state);
     - returns: The new current state after processing the input character.
 */
 int state_transition(state_machine *sm, char input_char);
+
+/*
+    Returns a pointer to a string containing a representation of a
+    state machine. The returned string must be freed by the caller.
+    - state_machine *sm: Pointer to the state machine.
+*/
+char* state_machine_to_string(state_machine *sm);
 
 #endif
