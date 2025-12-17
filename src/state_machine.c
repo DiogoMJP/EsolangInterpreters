@@ -146,7 +146,7 @@ int get_state_machine_string_length(state_machine *sm) {
             /* Count the '-' characters */
             len += 2;
             /* Count the condition characters and commas */
-            len += 2 * t->n_cond - 1;
+            len += 4 * t->n_cond - 1;
             /* Count the digits of the destination state ID */
             id = t->dest_state;
             if (id == 0) {
@@ -180,7 +180,7 @@ char* state_machine_to_string(state_machine *sm) {
             transition *t = s->transitions[j];
             sprintf(str + strlen(str), "%d-", i);
             for (int c = 0; c < t->n_cond; c++) {
-                sprintf(str + strlen(str), "%c,", t->conditions[c]);
+                sprintf(str + strlen(str), "%03d,", t->conditions[c]);
             }
             sprintf(str + strlen(str) - 1, "-%d\n", t->dest_state);
         }
