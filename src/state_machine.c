@@ -45,14 +45,15 @@ void delete_state_machine(state_machine *sm) {
     free(sm);
 }
 
-int add_state(state_machine *sm, int n_transitions, transition **transitions) {
+int add_state(state_machine *sm, int id, int n_transitions, transition **transitions) {
     if (sm->added_states == sm->n_states) {
         fprintf(stderr, "Cannot add more states than specified at creation.");
         return -1;
     }
+    sm->added_states++;
 
     state *s = (state*) malloc(sizeof(state));
-    s->id = sm->added_states++;
+    s->id = id;
     s->n_transitions = n_transitions;
     s->transitions = transitions;
     sm->states[s->id] = s;

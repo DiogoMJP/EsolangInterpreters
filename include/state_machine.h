@@ -37,6 +37,7 @@ typedef struct state_machine {
 /* 
     Allocates memory for a state_machine struct and initializes its values.
     - int n_states: Number of states the state machine will have.
+    - returns: Pointer to the created state_machine.
 */
 state_machine* create_state_machine(int n_states);
 
@@ -50,15 +51,19 @@ void delete_state_machine(state_machine* sm);
 /*
     Adds a state to the state machine.
     - state_machine *sm: Pointer to the state machine.
+    - int id: ID of the new state.
     - int n_transitions: Number of transitions the new state will have.
     - transition *transitions: Array of transitions for the new state.
+    - returns: ID of the added state.
 */
-int add_state(state_machine* sm, int n_transitions, transition **transitions);
+int add_state(state_machine* sm, int id, int n_transitions, transition **transitions);
 
 /*
     Creates a transition with given conditions and destination state.
     - char *conditions: String of characters that trigger the transition.
+    - int n_cond: Number of condition characters.
     - int dest_state: ID of the destination state for this transition.
+    - returns: Pointer to the created transition.
 */
 transition* create_transition(char *conditions, int n_cond, int dest_state);
 
@@ -75,6 +80,7 @@ int state_transition(state_machine *sm, char input_char);
     Returns a pointer to a string containing a representation of a
     state machine. The returned string must be freed by the caller.
     - state_machine *sm: Pointer to the state machine.
+    - returns: Pointer to the string representation of the state machine.
 */
 char* state_machine_to_string(state_machine *sm);
 
