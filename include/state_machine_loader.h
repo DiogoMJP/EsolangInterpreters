@@ -13,4 +13,12 @@
 */
 state_machine* create_state_machine_loader();
 
+/*
+	Loads and returns a state machine configured from
+	the file specified in the given filename.
+	- returns: Pointer to the loaded  state machine. If
+	there is an error, this value is NULL.
+*/
+state_machine *load_state_machine_from_file(const char *filename);
+
 #endif

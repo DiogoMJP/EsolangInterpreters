@@ -158,8 +158,8 @@ int get_state_machine_string_length(state_machine *sm) {
                     id /= 10;
                 };
             }
-            /* Count the newline character */
-            len++;
+            /* Count the newline and semi-collon characters */
+            len += 2;
         }
     }
 
@@ -183,7 +183,7 @@ char* state_machine_to_string(state_machine *sm) {
             for (int c = 0; c < t->n_cond; c++) {
                 sprintf(str + strlen(str), "%03d,", t->conditions[c]);
             }
-            sprintf(str + strlen(str) - 1, "-%d\n", t->dest_state);
+            sprintf(str + strlen(str) - 1, "-%d;\n", t->dest_state);
         }
     }
 
