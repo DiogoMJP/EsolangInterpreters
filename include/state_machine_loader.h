@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "state_machine.h"
+#include "state_machine_buffer.h"
 
 
 /* 
