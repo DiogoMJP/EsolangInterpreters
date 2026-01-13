@@ -128,12 +128,13 @@ state_machine *load_state_machine_from_file(const char *filename) {
 	for (char c = getc(file); c != EOF; c = getc(file)) {
 		char curr_state = state_transition(loader, c);
 		if (curr_state == -1) {
-			fprintf(stderr, "Invalid character: %c\n", c);
+			#ifdef DEBUG
+				printf("ERROR: Invalid character: %c\n", c);
+			#endif
 			delete_state_machine(loader);
 			fclose(file);
 			return NULL;
 		}
-		printf("%c\n", c);
 
 		switch (curr_state) {
 			case 1:
@@ -170,6 +171,68 @@ state_machine *load_state_machine_from_file(const char *filename) {
 
 	delete_state_machine(loader);
 	fclose(file);
+
+	state_machine *sm = create_state_machine_from_buffer(smb);
+
+	delete_state_machine_buffer(smb);
+
+	return sm;
+}
+
+
+state_machine *load_state_machine_from_string(const char *input_string) {
+	state_machine *loader = create_state_machine_loader();
+
+	state_machine_buffer *smb = NULL;
+	int src_node = 0;
+	char cond_char = 0;
+	cond_buffer *cb = NULL;
+	int dest_node = 0;
+	for (int i = 0; input_string[i] != '\0'; i++) {
+		char c = input_string[i];
+		char curr_state = state_transition(loader, c);
+		if (curr_state == -1) {
+			#ifdef DEBUG
+				printf("ERROR: Invalid character: %c\n", c);
+			#endif
+			delete_state_machine(loader);
+			return NULL;
+		}
+
+		switch (curr_state) {
+			case 1:
+				src_node = src_node * 10 + c - '0';
+				break;
+			case 4:
+				cond_char = c;
+				break;
+			case 6:
+				cb = add_to_cond_buffer(cb, cond_char);
+				cond_char = 0;
+				break;
+			case 7:
+				cond_char = cond_char * 10 + c - '0';
+				break;
+			case 8:
+				cb = add_to_cond_buffer(cb, cond_char);
+				break;
+			case 9:
+				dest_node = dest_node * 10 + c - '0';
+				break;
+			case 10:
+				smb = add_to_state_machine_buffer(smb, src_node, cb, dest_node);
+				/* Reset all temporary variables */
+				src_node = 0;
+				cond_char = 0;
+				cb = NULL;
+				dest_node = 0;
+				break;
+			default:
+				break;
+		}
+	}
+
+	delete_state_machine(loader);
 
 	state_machine *sm = create_state_machine_from_buffer(smb);
 
