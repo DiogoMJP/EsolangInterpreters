@@ -167,6 +167,15 @@ state_machine *load_state_machine_from_file(const char *filename) {
 				break;
 		}
 	}
+
+	delete_state_machine(loader);
+	fclose(file);
+
+	state_machine *sm = create_state_machine_from_buffer(smb);
+
+	delete_state_machine_buffer(smb);
+
+	return sm;
 }
 
 
@@ -211,6 +220,10 @@ int main() {
 	#endif
 
 	state_machine *sm = load_state_machine_from_file("state_machines/loader.sm");
+	if (sm == NULL) {
+		fprintf(stderr, "Failed to load state machine from file.\n");
+		return -1;
+	}
 
 	#ifdef DEBUG
 		printf("Loaded state machine:\n");
@@ -219,6 +232,21 @@ int main() {
 			printf("%s", sm_str);
 			free(sm_str);
 		}
+	#endif
+
+	#ifdef DEBUG
+		printf("Testing state machine loader transitions...\n");
+	#endif
+	printf("Current state: %d\n", sm->curr_state);
+	while (sm->curr_state != -1) {
+		input = getchar();
+		getchar(); // consume newline
+		state_transition(sm, input);
+		printf("Current state: %d\n", sm->curr_state);
+	}
+	
+	#ifdef DEBUG
+		printf("Deleting loaded state machine...\n");
 	#endif
 	delete_state_machine(sm);
 	

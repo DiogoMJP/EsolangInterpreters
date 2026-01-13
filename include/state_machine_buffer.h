@@ -109,6 +109,13 @@ state_machine_buffer* add_to_state_machine_buffer(
 	state_machine_buffer *smb, int id, cond_buffer *cb, int dest_id
 );
 
+/*
+    Deletes a state machine buffer and frees all associated memory.
+    - smb: Pointer to the state machine buffer to be deleted.
+    - returns: -1 if there is an error, 0 otherwise.
+*/
+int delete_state_machine_buffer(state_machine_buffer *smb);
+
 /* 
 	Creates and returns a state machine from the given state machine buffer.
     - returns: Pointer to the created state machine configured. If there is an error,

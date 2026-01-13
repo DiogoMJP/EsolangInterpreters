@@ -47,7 +47,9 @@ void delete_state_machine(state_machine *sm) {
 
 int add_state(state_machine *sm, int id, int n_transitions, transition **transitions) {
     if (sm->added_states == sm->n_states) {
-        fprintf(stderr, "Cannot add more states than specified at creation.");
+        #ifdef DEBUG
+            printf("Cannot add more states than specified at creation.");
+        #endif
         return -1;
     }
     sm->added_states++;
@@ -76,11 +78,15 @@ transition* create_transition(char *conditions, int n_cond, int dest_state) {
 
 int state_transition(state_machine *sm, char input_char) {
     if (sm == NULL) {
-        fprintf(stderr, "State machine is NULL.\n");
+        #ifdef DEBUG
+            printf("State machine is NULL.\n");
+        #endif
         return -1;
     }
     if (sm->curr_state == -1) {
-        fprintf(stderr, "Current state is invalid.\n");
+        #ifdef DEBUG
+            printf("Current state is invalid.\n");
+        #endif
         return -1;
     }
 
@@ -107,11 +113,15 @@ int state_transition(state_machine *sm, char input_char) {
 
 int get_state_machine_string_length(state_machine *sm) {
     if (sm == NULL) {
-        fprintf(stderr, "State machine is NULL.\n");
+        #ifdef DEBUG
+            printf("State machine is NULL.\n");
+        #endif
         return -1;
     }
     if (sm->states == NULL) {
-        fprintf(stderr, "State machine states are NULL.\n");
+        #ifdef DEBUG
+            printf("State machine states are NULL.\n");
+        #endif
         return -1;
     }
 
@@ -120,18 +130,24 @@ int get_state_machine_string_length(state_machine *sm) {
     for (int i = 0; i < sm->n_states; i++) {
         state *s = sm->states[i];
         if (s == NULL) {
-            fprintf(stderr, "State %d is NULL.\n", i);
+            #ifdef DEBUG
+                printf("State %d is NULL.\n", i);
+            #endif
             return -1;
         }
         if (s->transitions == NULL) {
-            fprintf(stderr, "State %d transitions are NULL.\n", i);
+            #ifdef DEBUG
+                printf("State %d transitions are NULL.\n", i);
+            #endif
             return -1;
         }
         /* Begin counting for each line/transition */
         for (int j = 0; j < s->n_transitions; j++) {
             transition *t = s->transitions[j];
             if (t == NULL) {
-                fprintf(stderr, "State %d transition %d is NULL.\n", i, j);
+                #ifdef DEBUG
+                    printf("State %d transition %d is NULL.\n", i, j);
+                #endif
                 return -1;
             }
             /* Count the digits of the current state ID */
